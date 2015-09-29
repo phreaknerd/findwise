@@ -1,0 +1,341 @@
+<?php
+
+function findwise_search_init() {
+  require_once('fw_search.class.inc');
+  drupal_add_js(drupal_get_path('module', 'findwise_search') .'/findwise_search.js');
+}
+
+function findwise_search_menu() {
+    $items['admin/config/search/searchservices'] = array(
+      'title' => 'Search services',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('fw_searchsvc_form'),
+      'access arguments' => array('access administration pages'),
+      'description' => 'Administer search-sources for the Findability platform.',
+      'type' => MENU_NORMAL_ITEM,
+    );
+
+
+    $items['fw_search'] = array(
+      'page callback' => 'fw_search',
+      'access arguments' => array('access content'),
+    );
+    $items['fw_search/complete'] = array(
+      'page callback' => 'fw_search_complete',
+      'access arguments' => array('access content'),
+    );
+    $items['fw_search/%'] = array(
+      'page callback' => 'fw_search',
+      'page arguments' => array(1),
+      'access arguments' => array('access content'),
+    );
+    return $items;
+}
+
+function fw_searchsvc_form($form, &$form_state) {
+
+  $form['fw_searchsvc_name'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search service identifier name'),
+    '#default_value' => variable_get('fw_searchsvc_name','default'),
+    '#description' => t('The identifier of the search-service.'),
+    '#required' => TRUE,
+  );
+
+  $form['fw_searchsvc_endpoint'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Search service Endpoint'),
+    '#default_value' => variable_get('fw_searchsvc_endpoint','http://localhost:8090'),
+    '#description' => t('The absolute URL to the search-service.'),
+    '#required' => TRUE,
+  );
+
+  return system_settings_form($form);
+}
+
+function fw_search($query = FALSE) {
+  $output = '';
+  $hits = 0; $page = 0; $offset = 0; $facets = '';
+  $query = $_GET['query'] ? $_GET['query'] : $query;
+  $_GET['query'] = isset($_GET['query']) ? $_GET['query'] : $query;
+  drupal_set_title(t('Searchresults'));
+
+  if($query !== false && strlen($query) >= 2) {
+    $ident = new stdClass();
+    $ident->name = variable_get('fw_searchsvc_name', 'default');
+    $ident->sources = array();
+    $ident->settings = array();
+    $ident->endpoint = variable_get('fw_searchsvc_endpoint','http://localhost:8090');
+    $handler = new fwSearchSvc($ident);
+ 
+    if($_GET['page']) {
+      $page = $_GET['page'];
+      $offset = $page*30;
+    }
+    $query_array = array();
+    foreach($_GET as $name => $value) {
+      if(strpos($name, 'facet_') === 0) {
+      $query_array[$name] = $value;
+      }
+    }
+    $result = $handler->search('/search', array_merge(array('q' => $query, 'hits' => 30, 'offset' => $offset), $query_array));
+    if($_GET['DEBUG']) {
+      header('Content-Type: text/xml');
+      echo($result->data);
+      exit;
+    }
+    $xml = new SimpleXMLElement($result->data);
+    $xml->registerXPathNamespace('ns', 'http://www.findwise.com/jellyfish/searchservice');
+    $hits = (string) $xml->numberOfHits;
+    $hits_returned = (string) $xml->docLists->docList->pagination->hitsReturned;
+    $offset =  (string) $xml->docLists->docList->pagination->offset;
+    $docs = array();
+    $query_array = array();
+    foreach($xml->docLists->docList->pagination->firstPage->params->param as $param) {
+      foreach($param->attributes() as $name => $value) $query_array[(string) $value] = urldecode((string) $param->value);
+    }
+    $query = $query_array['q'];
+    unset($query_array['q']);
+
+  //header('Content-Type: text/xml');
+  //echo $result->data; exit;
+
+    //Check for suggestions
+    if(count($xml->spellSuggestion->suggestion)) {
+      $link = '/fw_search/' .(string) $xml->spellSuggestion->suggestion. '/?' .http_build_query($query_array);
+      $output .= '<div class="row cols-3 cf" style=""><a href="'.$link.'">' . t('Did you mean @suggestion?', array('@suggestion' => (string) $xml->spellSuggestion->suggestion)) . '</a></div>';
+    }
+    $output .= '<div class="m news-listing company-news">';
+    if($hits > 0) {
+      $output .= '<p>'.t('Showing @count_start to @count_end from @count_all results.',array('@count_start' => $offset+1, '@count_end' => $offset+$hits_returned, '@count_all' => $hits)).'</p><ul>';
+      foreach($xml->docLists->docList->docs->doc as $doc) {
+        $data = array();
+        foreach($doc->field as $field){ 
+          $data[(string) $field->attributes()] = (string) $field;
+        };
+        switch($data['collection']){
+        case "alfresco":
+            $link = $data['url'];
+            $title = $data['title'];
+            $body = preg_replace('/\s+?(\S+)?$/', '', substr($data['body'], 0, 201));
+            $type = t($data['content_type']);
+            $author = $data['author'] ? t('Created by @author', array('@author' => $data['author'])) : '';
+            $collection = t('Source: '.$data['collection']);
+            $date = t('Modified @date', array('@date' => format_date(strtotime($data['created']), 'short')));
+            break;
+
+          case "people":
+            $link = $data['url'];
+            $title = $data['firstname']." ".$data['lastname'];
+            $body = '<a href="mailto:'.$data['email'].'">'.$data['email'].'</a>';
+            $type = t('User');
+            $author = '';
+            $collection = t('Source: '.$data['collection']);
+            $date = t('Registered since @date', array('@date' => format_date(strtotime($data['created']), 'short')));
+            break;
+          case 'drupal_external':
+            $link = $data['url'];
+            $target = '_blank';
+            $title = $data['title'];
+            $body = preg_replace('/\s+?(\S+)?$/', '', substr($data['body'], 0, 201));
+            $type = t(ucfirst($data['content_type']));
+            $author = $data['author'] ? t('Created by @author', array('@author' => $data['author'])) : '';
+            $collection = t('Source: '.$data['collection']);
+            $date = t('Modified @date', array('@date' => format_date(strtotime($data['created']), 'short')));
+            break;
+
+          default:
+            $link = $data['url'];
+            $title = $data['title'];
+            $body = preg_replace('/\s+?(\S+)?$/', '', substr($data['body'], 0, 201));
+            $type = t(ucfirst($data['content_type']));
+            $author = $data['author'] ? t('Created by @author', array('@author' => $data['author'])) : '';
+            $collection = t('Source: '.$data['collection']);
+            $date = t('Modified @date', array('@date' => format_date(strtotime($data['created']), 'short')));
+            break;
+        }
+        $targ = (isset($target) && $target) ? 'target="'.$target.'"' : '';
+        $target = false;
+        $output .= <<<EOD
+  <li class="cf">
+    <h3><a href="{$link}" {$targ}>{$title}</a></h3>
+    <p class="news-meta">
+    <span class="">{$collection} &gt; {$type}</span>
+    </p>
+    <p>{$body}...</p>
+  </li>
+EOD;
+      }
+      $output .= '</ul>';
+      if($hits > $hits_returned) {
+        $link = '/fw_search/' .$query. '/?' .http_build_query($query_array);
+
+        $output .= _alingsasintra_pager($hits, $page, 30, $link);
+      }
+      //Facets
+      $facets = array();
+      if($xml->facets) {
+        foreach($xml->facets->standardFacet as $facet) {
+          $items = array();
+          foreach ($facet->selectableItems->item as $item) {
+            if($item->count > 0) {
+              $query_array = array();
+              foreach($item->params->param as $param) {
+                foreach($param->attributes() as $name => $value) $query_array[(string) $value] = urldecode((string) $param->value);
+              }
+              $query = $query_array['q']; 
+              unset($query_array['q']);
+              if((string) $facet->displayName == 'type') {
+                $items[] = '<a href="/fw_search/' .$query. '/?' .http_build_query($query_array). '">' .t('Source: '.(string) $item->displayName). ' (' .(string) $item->count. ')</a>';
+              }
+              else {
+                 $items[] = '<a href="/fw_search/' .$query. '/?' .http_build_query($query_array). '">' .t((string) $item->displayName). ' (' .(string) $item->count. ')</a>';
+              }
+            }
+          }
+          if(count((array) $facet->appliedItems) > 0) {
+            foreach ($facet->appliedItems->item as $item) {
+              $query_array = array();
+              foreach($item->params->param as $param) {
+                foreach($param->attributes() as $name => $value) $query_array[(string) $value] = urldecode((string) $param->value);
+              }
+              $query = $query_array['q']; 
+              unset($query_array['q']);
+              if((string) $facet->displayName == 'type') {
+                $items[] = '<a class="selected" href="/fw_search/' .$query. '/?' .http_build_query($query_array). '">' .t('Source: '.(string) $item->displayName). ' (' .(string) $item->count. ')</a>';
+              }
+              else {
+                $items[] = '<a class="selected" href="/fw_search/' .$query. '/?' .http_build_query($query_array). '">' .t((string) $item->displayName). ' (' .(string) $item->count. ')</a>';
+              }
+            }
+          }
+          if($items) {
+            if((string) $facet->displayName == 'type') {
+              $facets[(string) $facet->displayName] .= '<h4>'. t('Source') .'</h4>';
+            }
+            else {
+              $facets[(string) $facet->displayName] .= '<h4>'. t(ucfirst((string) $facet->displayName)) .'</h4>';
+            }
+            $facets[(string) $facet->displayName] .= '<ul class="facet" id="'.$facet.'"><li>' . implode('</li><li>', $items) . '</li></ul>';
+          }
+        }
+      }
+      //var_dump($facets); exit;
+      $output_facets = array();
+      $output_facets[] = isset($facets['type']) ? $facets['type'] : null;
+      $output_facets[] = isset($facets['content type']) ? $facets['content type'] : null;
+      $output_facets[] = isset($facets['author']) ? $facets['author'] : null;
+      $output_facets[] = isset($facets['date']) ? $facets['date'] : null;
+      $facets = implode('', $output_facets);
+      $suggestions = '';
+      if($xml->spellSuggestion) {
+        foreach($xml->spellSuggestion->suggestion as $suggestion) {
+          $suggestions .= '<p>'. t('Did you mean @suggestion?', array('@suggestion' => (string) $suggestion)) .'</p>';
+        }
+      }
+
+    }
+    else {
+      $output .= '<p style="text-align: left;">'.t('No searchresults.').'</p><br/>';
+    }
+  }
+  else {
+    $output .= '<div class="m news-listing company-news">';
+    $output .= '<p style="text-align: left;">'.t('Searchterm has to be at least two characters long.').'</p><br/>';
+  }
+  $output .= '</div>';
+  return array('#markup' => $output, 'facet_data' => $facets, 'suggestions_data' => $suggestions);
+}
+
+function fw_search_complete() {
+  $ident = new stdClass();
+  $ident->name = variable_get('fw_searchsvc_name', 'default');
+  $ident->sources = array();
+  $ident->settings = array();
+  $ident->endpoint = variable_get('fw_searchsvc_endpoint', 'http://localhost:8090');
+  $handler = new fwSearchSvc($ident);
+  if($_GET['query']) {
+    $query = $_GET['query'];
+  }
+  $result = $handler->complete('/qc/complete.list', array('q' => $query));
+  $json = json_decode($result->data);
+  drupal_json_output($json);
+}
+
+function findwise_search_page_alter(&$page) {
+  if(isset($page['sidebar_second']['findwise_search_findwise_search_facets']['#markup'])){
+    $facet_data = $page['content']['system_main']['facet_data'];
+    $page['sidebar_second']['findwise_search_findwise_search_facets']['#markup'] = $facet_data;
+  }
+
+  if(isset($page['sidebar_second']['findwise_search_findwise_search_suggestions']['#markup'])) {
+    $suggestions_data = $page['content']['system_main']['suggestions_data'];
+    $page['sidebar_second']['findwise_search_findwise_search_suggestions']['#markup'] = $suggestions_data;
+  }
+
+}
+
+function findwise_search_block_info() {
+  // This example comes from node.module.
+  $blocks['findwise_search_facets'] = array(
+    'info' => t('Findwise Search Facets'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['findwise_search_suggestions'] = array(
+    'info' => t('Findwise Search Suggestions'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+function findwise_search_block_view($delta = '') {
+  // This example is adapted from node.module.
+  $block = array();
+
+  switch ($delta) {
+    case 'findwise_search_facets':
+      $block['subject'] = t('Findwise Search Facets');
+      $block['content'] = array(
+        '#markup' => '<p>Some stuff.</p>',
+        '#title' => t('Search Facets'),
+      );
+      break;
+
+    case 'findwise_search_suggestions':
+      $block['subject'] = t('Findwise Search Suggestions');
+      $block['content'] = array(
+        '#markup' => '<p>Some stuff.</p>',
+        '#title' => t('Search Suggestions'),
+      );
+      break;
+
+  }
+  return $block;
+}
+
+function _XMLToArrayFlat($xml, &$return, $path='', $root=false)
+{
+    $children = array();
+    if ($xml instanceof SimpleXMLElement) {
+        $children = $xml->children();
+        if ($root){ // we're at root
+            $path .= '/'.$xml->getName();
+        }
+        $attributes = $xml->attributes();
+    }
+    if ( count($children) == 0 ){
+       $return[$path] = (string)$xml;
+        $resturn[$path.'->attributes'] = $attributes;
+        return;
+    }
+    $seen=array();
+    foreach ($children as $child => $value) {
+        $childname = ($child instanceof SimpleXMLElement)?$child->getName():$child;
+        if ( !isset($seen[$childname])){
+            $seen[$childname]=0;
+        }
+        $seen[$childname]++;
+        _XMLToArrayFlat($value, $return, $path.'/'.$child.'['.$seen[$childname].']');
+    }
+} 

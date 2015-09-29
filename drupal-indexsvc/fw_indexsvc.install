@@ -1,0 +1,60 @@
+<?php
+
+/**
+ * @file
+ * Findwise IndexService module install/schema/update hooks.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function fw_indexsvc_install() {
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function fw_indexsvc_schema() {
+  $schema = array();
+
+  $schema['fw_indexsvc_identifiers'] = array(
+    'description' => 'All available identifiers for the index services in the system.',
+    'fields' => array(
+      'iid' => array(
+        'description' => 'The unique ID for this particular identifier.',
+        'type' => 'serial',
+        'size' => 'small',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'name' => array(
+        'description' => 'The machine-name for this identifier.',
+        'type' => 'varchar',
+        'length' => '32',
+        'not null' => FALSE,
+        'default' => '',
+      ),
+      'endpoint' => array(
+        'description' => 'The URL to the endpoint for this identifier.',
+        'type' => 'varchar',
+        'length' => '225',
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'sources' => array(
+        'description' => 'The sources this identifier should index.',
+        'type' => 'blob',
+      ),
+      'settings' => array(
+        'description' => 'The settings for each source type.',
+        'type' => 'blob',
+      )
+    ),
+    'primary key' => array('iid'),
+    'unique keys' => array(
+      'name' => array('name'),
+    ),
+  );
+
+  return $schema;
+}

@@ -1,0 +1,6 @@
+name = Findwise IndexService Connector
+description = Push integration for Findwise IndexSvc.
+core = 7.x
+project = fw_indexsvc
+dependencies[] = entity
+version = 7.x-1.0

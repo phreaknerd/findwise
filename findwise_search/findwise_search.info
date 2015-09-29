@@ -1,0 +1,6 @@
+name = Findwise Search 
+description = Search with Findwise framework 
+package = Alingsås Intranet
+core = 7.x
+files[] = fw_search.class.inc
+configure = admin/config/search/searchservices

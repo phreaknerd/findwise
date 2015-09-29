@@ -1,0 +1,455 @@
+.indexsvc a.btn {
+  color: white;
+}
+.indexsvc a.btn-default {
+  color: black;
+}
+.indexsvc table {
+  min-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  border: none;
+}
+.indexsvc tr.odd {
+  border-bottom-color: #E3E3E3;
+}
+.indexsvc tr.even {
+
+}
+.indexsvc th {
+  padding-left: 7px;
+  padding-bottom: 2px;
+  font-weight: bold;
+}
+.indexsvc td {
+  vertical-align: middle;
+}
+.indexsvc td ul {
+  margin-bottom: 0 !important;
+}
+.indexsvc td ul.links li.first {
+  margin: 0;
+}
+.indexsvc td ul.links {
+  white-space: nowrap;
+}
+.indexsvc td ul.links li {
+  float: left;
+  padding-right: 4px;
+}
+.indexsvc .btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.428571429;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.indexsvc .btn:focus {
+  outline: thin dotted #333;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+.indexsvc .btn:hover,
+.indexsvc .btn:focus {
+  color: #333333;
+  text-decoration: none;
+}
+
+.indexsvc .btn:active,
+.indexsvc .btn.active {
+  background-image: none;
+  outline: 0;
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+  box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+}
+
+.indexsvc .btn.disabled,
+.indexsvc .btn[disabled],
+.indexsvc fieldset[disabled] .btn {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.indexsvc .btn-default {
+  color: #333333;
+  background-color: #ffffff;
+  border-color: #cccccc;
+}
+
+.indexsvc .btn-default:hover,
+.indexsvc .btn-default:focus,
+.indexsvc .btn-default:active,
+.indexsvc .btn-default.active,
+.indexsvc .open .dropdown-toggle.btn-default {
+  color: #333333;
+  background-color: #ebebeb;
+  border-color: #adadad;
+}
+
+.indexsvc .btn-default:active,
+.indexsvc .btn-default.active,
+.indexsvc .open .dropdown-toggle.btn-default {
+  background-image: none;
+}
+
+.indexsvc .btn-default.disabled,
+.indexsvc .btn-default[disabled],
+.indexsvc fieldset[disabled] .btn-default,
+.indexsvc .btn-default.disabled:hover,
+.indexsvc .btn-default[disabled]:hover,
+.indexsvc fieldset[disabled] .btn-default:hover,
+.indexsvc .btn-default.disabled:focus,
+.indexsvc .btn-default[disabled]:focus,
+.indexsvc fieldset[disabled] .btn-default:focus,
+.indexsvc .btn-default.disabled:active,
+.indexsvc .btn-default[disabled]:active,
+.indexsvc fieldset[disabled] .btn-default:active,
+.indexsvc .btn-default.disabled.active,
+.indexsvc .btn-default[disabled].active,
+.indexsvc fieldset[disabled] .btn-default.active {
+  background-color: #ffffff;
+  border-color: #cccccc;
+}
+
+.indexsvc .btn-primary {
+  color: #ffffff;
+  background-color: #428bca;
+  border-color: #357ebd;
+}
+
+.indexsvc .btn-primary:hover,
+.indexsvc .btn-primary:focus,
+.indexsvc .btn-primary:active,
+.indexsvc .btn-primary.active,
+.indexsvc .open .dropdown-toggle.btn-primary {
+  color: #ffffff;
+  background-color: #3276b1;
+  border-color: #285e8e;
+}
+
+.indexsvc .btn-primary:active,
+.indexsvc .btn-primary.active,
+.indexsvc .open .dropdown-toggle.btn-primary {
+  background-image: none;
+}
+
+.indexsvc .btn-primary.disabled,
+.indexsvc .btn-primary[disabled],
+.indexsvc fieldset[disabled] .btn-primary,
+.indexsvc .btn-primary.disabled:hover,
+.indexsvc .btn-primary[disabled]:hover,
+.indexsvc fieldset[disabled] .btn-primary:hover,
+.indexsvc .btn-primary.disabled:focus,
+.indexsvc .btn-primary[disabled]:focus,
+.indexsvc fieldset[disabled] .btn-primary:focus,
+.indexsvc .btn-primary.disabled:active,
+.indexsvc .btn-primary[disabled]:active,
+.indexsvc fieldset[disabled] .btn-primary:active,
+.indexsvc .btn-primary.disabled.active,
+.indexsvc .btn-primary[disabled].active,
+.indexsvc fieldset[disabled] .btn-primary.active {
+  background-color: #428bca;
+  border-color: #357ebd;
+}
+
+.indexsvc .btn-warning {
+  color: #ffffff;
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
+
+.indexsvc .btn-warning:hover,
+.indexsvc .btn-warning:focus,
+.indexsvc .btn-warning:active,
+.indexsvc .btn-warning.active,
+.indexsvc .open .dropdown-toggle.btn-warning {
+  color: #ffffff;
+  background-color: #ed9c28;
+  border-color: #d58512;
+}
+
+.indexsvc .btn-warning:active,
+.indexsvc .btn-warning.active,
+.indexsvc .open .dropdown-toggle.btn-warning {
+  background-image: none;
+}
+
+.indexsvc .btn-warning.disabled,
+.indexsvc .btn-warning[disabled],
+.indexsvc fieldset[disabled] .btn-warning,
+.indexsvc .btn-warning.disabled:hover,
+.indexsvc .btn-warning[disabled]:hover,
+.indexsvc fieldset[disabled] .btn-warning:hover,
+.indexsvc .btn-warning.disabled:focus,
+.indexsvc .btn-warning[disabled]:focus,
+.indexsvc fieldset[disabled] .btn-warning:focus,
+.indexsvc .btn-warning.disabled:active,
+.indexsvc .btn-warning[disabled]:active,
+.indexsvc fieldset[disabled] .btn-warning:active,
+.indexsvc .btn-warning.disabled.active,
+.indexsvc .btn-warning[disabled].active,
+.indexsvc fieldset[disabled] .btn-warning.active {
+  background-color: #f0ad4e;
+  border-color: #eea236;
+}
+
+.indexsvc .btn-danger {
+  color: #ffffff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+.indexsvc .btn-danger:hover,
+.indexsvc .btn-danger:focus,
+.indexsvc .btn-danger:active,
+.indexsvc .btn-danger.active,
+.indexsvc .open .dropdown-toggle.btn-danger {
+  color: #ffffff;
+  background-color: #d2322d;
+  border-color: #ac2925;
+}
+
+.indexsvc .btn-danger:active,
+.indexsvc .btn-danger.active,
+.indexsvc .open .dropdown-toggle.btn-danger {
+  background-image: none;
+}
+
+.indexsvc .btn-danger.disabled,
+.indexsvc .btn-danger[disabled],
+.indexsvc fieldset[disabled] .btn-danger,
+.indexsvc .btn-danger.disabled:hover,
+.indexsvc .btn-danger[disabled]:hover,
+.indexsvc fieldset[disabled] .btn-danger:hover,
+.indexsvc .btn-danger.disabled:focus,
+.indexsvc .btn-danger[disabled]:focus,
+.indexsvc fieldset[disabled] .btn-danger:focus,
+.indexsvc .btn-danger.disabled:active,
+.indexsvc .btn-danger[disabled]:active,
+.indexsvc fieldset[disabled] .btn-danger:active,
+.indexsvc .btn-danger.disabled.active,
+.indexsvc .btn-danger[disabled].active,
+.indexsvc fieldset[disabled] .btn-danger.active {
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+
+.indexsvc .btn-success {
+  color: #ffffff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+
+.indexsvc .btn-success:hover,
+.indexsvc .btn-success:focus,
+.indexsvc .btn-success:active,
+.indexsvc .btn-success.active,
+.indexsvc .open .dropdown-toggle.btn-success {
+  color: #ffffff;
+  background-color: #47a447;
+  border-color: #398439;
+}
+
+.indexsvc .btn-success:active,
+.indexsvc .btn-success.active,
+.indexsvc .open .dropdown-toggle.btn-success {
+  background-image: none;
+}
+
+.indexsvc .btn-success.disabled,
+.indexsvc .btn-success[disabled],
+.indexsvc fieldset[disabled] .btn-success,
+.indexsvc .btn-success.disabled:hover,
+.indexsvc .btn-success[disabled]:hover,
+.indexsvc fieldset[disabled] .btn-success:hover,
+.indexsvc .btn-success.disabled:focus,
+.indexsvc .btn-success[disabled]:focus,
+.indexsvc fieldset[disabled] .btn-success:focus,
+.indexsvc .btn-success.disabled:active,
+.indexsvc .btn-success[disabled]:active,
+.indexsvc fieldset[disabled] .btn-success:active,
+.indexsvc .btn-success.disabled.active,
+.indexsvc .btn-success[disabled].active,
+.indexsvc fieldset[disabled] .btn-success.active {
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+
+.indexsvc .btn-info {
+  color: #ffffff;
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+
+.indexsvc .btn-info:hover,
+.indexsvc .btn-info:focus,
+.indexsvc .btn-info:active,
+.indexsvc .btn-info.active,
+.indexsvc .open .dropdown-toggle.btn-info {
+  color: #ffffff;
+  background-color: #39b3d7;
+  border-color: #269abc;
+}
+
+.indexsvc .btn-info:active,
+.indexsvc .btn-info.active,
+.indexsvc .open .dropdown-toggle.btn-info {
+  background-image: none;
+}
+
+.indexsvc .btn-info.disabled,
+.indexsvc .btn-info[disabled],
+.indexsvc fieldset[disabled] .btn-info,
+.indexsvc .btn-info.disabled:hover,
+.indexsvc .btn-info[disabled]:hover,
+.indexsvc fieldset[disabled] .btn-info:hover,
+.indexsvc .btn-info.disabled:focus,
+.indexsvc .btn-info[disabled]:focus,
+.indexsvc fieldset[disabled] .btn-info:focus,
+.indexsvc .btn-info.disabled:active,
+.indexsvc .btn-info[disabled]:active,
+.indexsvc fieldset[disabled] .btn-info:active,
+.indexsvc .btn-info.disabled.active,
+.indexsvc .btn-info[disabled].active,
+.indexsvc fieldset[disabled] .btn-info.active {
+  background-color: #5bc0de;
+  border-color: #46b8da;
+}
+
+.indexsvc .btn-link {
+  font-weight: normal;
+  color: #428bca;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.indexsvc .btn-link,
+.indexsvc .btn-link:active,
+.indexsvc .btn-link[disabled],
+.indexsvc fieldset[disabled] .btn-link {
+  background-color: transparent;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.indexsvc .btn-link,
+.indexsvc .btn-link:hover,
+.indexsvc .btn-link:focus,
+.indexsvc .btn-link:active {
+  border-color: transparent;
+}
+
+.indexsvc .btn-link:hover,
+.indexsvc .btn-link:focus {
+  color: #2a6496;
+  text-decoration: underline;
+  background-color: transparent;
+}
+
+.indexsvc .btn-link[disabled]:hover,
+.indexsvc fieldset[disabled] .btn-link:hover,
+.indexsvc .btn-link[disabled]:focus,
+.indexsvc fieldset[disabled] .btn-link:focus {
+  color: #999999;
+  text-decoration: none;
+}
+
+.indexsvc .btn-lg {
+  padding: 10px 16px;
+  font-size: 18px;
+  line-height: 1.33;
+  border-radius: 6px;
+}
+
+.indexsvc .btn-sm,
+.indexsvc .btn-xs {
+  padding: 5px 10px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+
+.indexsvc .btn-xs {
+  padding: 1px 5px;
+}
+.indexsvc .btn:before {
+  position: absolute;
+  top: 1px;
+  left: 2px;
+}
+.indexsvc .btn:hover:before {
+  opacity: 0.8;
+}
+.indexsvc .btn-delete,
+.indexsvc .btn-upload,
+.indexsvc .btn-clear,
+.indexsvc .btn-edit {
+  position: relative;
+  padding-left: 20px;
+}
+.indexsvc .btn-upload {
+  padding-left: 21px;
+}
+.indexsvc .btn-delete:before {
+  left: 4px; top: 2px;
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKBAMAAAB/HNKOAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAElBMVEUAAAD///////////////////8+Uq06AAAABXRSTlMAabEGsjPsXzkAAAABYktHRAH/Ai3eAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAL0lEQVQI12NgVGYwEmAQDTF2DWRQDXUJDWIwCQ0NdWZgdg0NMYCSEBGILEQlWBcATA0LKRpX+skAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTMtMTAtMjhUMjM6MjU6MjIrMDE6MDAOrm2WAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDEzLTEwLTI4VDIzOjI1OjIyKzAxOjAwf/PVKgAAAABJRU5ErkJggg==);
+}
+.indexsvc .btn-upload:before {
+  left: 3px; top: 3px;
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAANCAMAAACuAq9NAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAApVBMVEUAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+4/eNVAAAANnRSTlMAT8/+87YuavY0EfXhyrhMSVyjnaXjv5cBA6D9/Ik2LdLBgz/x8DeL+EIThWw9YCO5zMgcMCAUTCuTAAAAAWJLR0QB/wIt3gAAAAlwSFlzAAAuIwAALiMBeKU/dgAAAHlJREFUCNeFjkcWgkAQBT8CihhBhTEiwYAgwfDvfzRnRn0urUVX16obAIyOadldfOhR4fTf5Q50cjgaT2RO+cOD6yvP5joXCJRCsVwpr7GRcyt2kQjlskdMJkizw1GceM5xKUrkDpldUdX6VN205M2+fx/Bg3wCf/MFt+0TmITl2lMAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTMtMTAtMjhUMjM6MjU6MjIrMDE6MDAOrm2WAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDEzLTEwLTI4VDIzOjI1OjIyKzAxOjAwf/PVKgAAAABJRU5ErkJggg==);
+}
+.indexsvc .btn-clear:before {
+  left: 4px; top: 3px;
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAsAAAANBAMAAACN24kIAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAGFBMVEUAAAD///////////////////////////8jfp1fAAAAB3RSTlMAAdQNEB/+m15KTAAAAAFiS0dEAf8CLd4AAAAJcEhZcwAALiMAAC4jAXilP3YAAAA0SURBVAjXY2AQKi8SYGAwCQ9xDzFgSC8HggQGERcgEGBwB/EcGNxBgDgqHAgcGJiA2ooYAPRcFn4E5/FxAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDEzLTEwLTI4VDIzOjI1OjIxKzAxOjAwP0Z3CwAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxMy0xMC0yOFQyMzoyNToyMSswMTowME4bz7cAAAAASUVORK5CYII=);
+}
+.indexsvc .btn-edit:before {
+  left: 3px; top: 3px;
+  content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAMAAABFNRROAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAY1BMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///9m1lLMAAAAH3RSTlMAIbP65zAQ5rErafAWf6QemAGn1pc9n457G4iU4iTjJcJLQAAAAAFiS0dEILNrPYAAAAAJcEhZcwAALiMAAC4jAXilP3YAAABPSURBVAjXdcxJEoAgEEPRKM4oOM+a+9/SssAuNv5V3iaAK4pVkvqNLGdRfkBFXQvQkAa2degMyV4NDiPf9CSYl3UT7P7gHzhC4AyB6w7wACMCBpj3ePwPAAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDEzLTEwLTI4VDIzOjI1OjIxKzAxOjAwP0Z3CwAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxMy0xMC0yOFQyMzoyNToyMSswMTowME4bz7cAAAAASUVORK5CYII=);
+}
+@media only screen and (-webkit-min-device-pixel-ratio: 1.5), only screen and (min--moz-device-pixel-ratio: 1.5), only screen and (-o-min-device-pixel-ratio: 3/2), only screen and (min-device-pixel-ratio: 1.5) {
+  .indexsvc .btn-delete:before,
+  .indexsvc .btn-upload:before,
+  .indexsvc .btn-clear:before,
+  .indexsvc .btn-edit:before {
+    content: '';
+    display: block;
+    background-size: 50%;
+    background-repeat: no-repeat;
+  }
+  .indexsvc .btn-delete:before {
+    top: 5px;
+    width: 20px; height: 21px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABkAAAAaCAMAAAB1owf/AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAbFBMVEUAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////8+T+BWAAAAI3RSTlMAN8cVyDXxzg8t68kOJb4KJOS7BtCyz/SoQvbiR/pOWv1eacY+8PsAAAABYktHRAH/Ai3eAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAq0lEQVQoz42SVw6DMBBE1yE003EIJZi2978jptgUaVHma0ZPsrcBKLGXBYesN9PWdtD1DPBcdOzN+hwRg3AHYaAS9xcbLQAxTlaQxGviEUCa4aZcKCDyPWUpfFCrECAKk77AShMqURlfqvrqxsSfcU29fNpKvEu2W6HdHclON9cPFzD0x0DGCxlPo4LpBCb4i5CvkRWQVZOdktOhJ0pvgd4cve2HC3m4KuISZ+XINCuOtlC5AAAAJXRFWHRkYXRlOmNyZWF0ZQAyMDEzLTEwLTI4VDIzOjQwOjExKzAxOjAwv1Vx7wAAACV0RVh0ZGF0ZTptb2RpZnkAMjAxMy0xMC0yOFQyMzo0MDoxMSswMTowMM4IyVMAAAAASUVORK5CYII=);
+  }
+  .indexsvc .btn-upload:before {
+    width: 28px; height: 28px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAMAAABF0y+mAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAA6lBMVEUAAAD///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////+Le70HAAAATXRSTlMABmC06vrWjCIufgI48aUDGut/JzJAKhj96He+DYqun/5ILclfeLB8aexRcYjIkvmFAZfL/LKepHPKqd8KmvAweZi2xiiDljd19vTvW0OaQgkAAAABYktHRAH/Ai3eAAAACXBIWXMAAC4jAAAuIwF4pT92AAAA9ElEQVQoz82S13rCMAyFxQhQoGxooaXsPcMqqyYte+j9X6cewTiQB+DcRDp/PlmWDCDkcLrcqHm8PnjUiweFNH/gngVfUSoUtrJIFBXFrDCkMtTiiWRKFn97xwelMw4BnWinj08Os7YQvzjMyTxvoQXKiiWZlisqrALUbr/XAfwKbEDzlrTYGW2FQkeGFdF7Vxo9kHfss/HT0emDqzOEkRm1GRtPdEq/TWsKMxEMqBuem18xzsXSbOhHel5egQZkRSMjL9ak/yr1/3C94e0Vt1u2wt21D4Mmy71lbcr9DvdvYUoIOTJyIuR8sXlIfHVJsNfzw38+J3JQYhYO1wAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMy0xMC0yOFQyMzo0MTowMiswMTowMK3VANIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTMtMTAtMjhUMjM6NDE6MDIrMDE6MDDciLhuAAAAAElFTkSuQmCC);
+  }
+  .indexsvc .btn-clear:before {
+    top: 4px;
+    width: 23px; height: 28px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABcAAAAaCAMAAABrajdMAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAP1BMVEUAAAD///////////////////////////////////////////////////////////////////////////////9Du/pqAAAAFHRSTlMAKM6pwGAIEMRq9A/wMJA9l9ZC4jA7vlcAAAABYktHRAH/Ai3eAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAaklEQVQoz+3RSQ6AIBBE0VYEB3AA6/5nNZaYKEj0AP5NJ29BOrQIq2oc1ZVcUzhTN2+gOTWaKKbd69Bz9ug4jQx4aih6OdumWbrLXnEvPnL/CRP3H3//6DPvu2DhfefoPvtnTw9rwmsQ2QC9vhbzRuIuOAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxMy0xMC0yOFQyMzo0MTowMiswMTowMK3VANIAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTMtMTAtMjhUMjM6NDE6MDIrMDE6MDDciLhuAAAAAElFTkSuQmCC);
+  }
+  .indexsvc .btn-edit:before {
+    width: 26px; height: 26px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAMAAACelLz8AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAolBMVEUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD///+grwMoAAAANHRSTlMAKpvl87A5efzwdgGG94kQMv6aGqOz50zhCwRgjNz91lmX+3rRCMAV38xcAogUIA2RgXiEYOVXOAAAAAFiS0dENd622WsAAAAJcEhZcwAALiMAAC4jAXilP3YAAACWSURBVCjPzc/JEsIgEEXR54yJ0cR5ilGcNc79/99mGleEZu9dUBSnmgKgVKVao3qjCbeWoqJ2EDrSYYi6PXcmTohUfyDchmExM4LYmO+biMRC0xlv5wubImNLhnRlSZgZUvE6Jcos2dAvzctWEtNu75PDUZATUXK+XAXJcbs/xBfk5a/+s+DpFWiv4OUV4O0VINAf8fwLEdUpujUmknUAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTMtMTAtMjhUMjM6NDE6MDIrMDE6MDCt1QDSAAAAJXRFWHRkYXRlOm1vZGlmeQAyMDEzLTEwLTI4VDIzOjQxOjAyKzAxOjAw3Ii4bgAAAABJRU5ErkJggg==);
+  }
+}

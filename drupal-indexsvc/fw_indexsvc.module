@@ -1,0 +1,640 @@
+<?php
+
+/**
+ * @file
+ * Code for the fw_indexsvc module.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function fw_indexsvc_menu() {
+  $items = array();
+
+  $items[FW_INDEXSVC_ADMIN_PATH] = array(
+    'title' => 'Index services',
+    'page callback' => 'fw_indexsvc_admin_page',
+    'access callback' => 'user_access',
+    'access arguments' => array('administer content types'),
+    'description' => 'Administer indexing of sources to the Findability platform.',
+    'file' => 'includes/fw_indexsvc.admin.inc',
+  );
+
+  $items[FW_INDEXSVC_ADMIN_PATH . '/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+
+  $items[FW_INDEXSVC_ADMIN_PATH . '/add'] = array(
+    'title' => 'Add identifier',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fw_indexsvc_ident_form'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer content types'),
+    'file' => 'includes/fw_indexsvc.admin.inc',
+    'type' => MENU_LOCAL_ACTION,
+  );
+
+  $items[FW_INDEXSVC_ADMIN_PATH . '/manage/%fw_indexsvc_ident'] = array(
+    'title' => 'Edit identifier',
+    'title callback' => 'fw_indexsvc_page_title',
+    'title arguments' => array(FW_INDEXSVC_ADMIN_PATH_START + 1),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fw_indexsvc_ident_form', FW_INDEXSVC_ADMIN_PATH_START + 1),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer content types'),
+    'file' => 'includes/fw_indexsvc.admin.inc',
+  );
+
+  $items[FW_INDEXSVC_ADMIN_PATH . '/manage/%fw_indexsvc_ident/edit'] = array(
+    'title' => 'Edit',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+
+  $items[FW_INDEXSVC_ADMIN_PATH . '/manage/%fw_indexsvc_ident/delete'] = array(
+    'title' => 'Delete',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fw_indexsvc_delete_confirm', FW_INDEXSVC_ADMIN_PATH_START + 1),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer content types'),
+    'file' => 'includes/fw_indexsvc.admin.inc',
+  );
+
+  $items[FW_INDEXSVC_ADMIN_PATH . '/manage/%fw_indexsvc_ident/reindex'] = array(
+    'title' => 'Upload',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fw_indexsvc_reindex', FW_INDEXSVC_ADMIN_PATH_START + 1),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer content types'),
+    'file' => 'includes/fw_indexsvc.admin.inc',
+  );
+
+  $items[FW_INDEXSVC_ADMIN_PATH . '/manage/%fw_indexsvc_ident/clear'] = array(
+    'title' => 'Clear',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('fw_indexsvc_clear', FW_INDEXSVC_ADMIN_PATH_START + 1),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer content types'),
+    'file' => 'includes/fw_indexsvc.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function fw_indexsvc_theme() {
+  return array(
+    'fw_indexsvc_admin_page' => array(
+      'variables' => array('idents' => NULL),
+    ),
+    'fw_indexsvc_status' => array(
+      'variables' => array('status' => NULL, 'attributes' => NULL),
+    )
+  );
+}
+
+/**
+ * Title callback for an identifier.
+ */
+function fw_indexsvc_page_title($ident) {
+  return $ident->name;
+}
+
+/**
+ * Menu argument loader: loads an identifier by string.
+ *
+ * @param $name
+ *   The machine-readable name of a identifier to load, where '_' is replaced
+ *   with '-'.
+ *
+ * @return Array
+ *   An identifier object or FALSE if $name does not exist.
+ */
+function fw_indexsvc_ident_load($name) {
+  return fw_indexsvc_get_ident($name);
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * @param Object $entity
+ * @param string $type
+ */
+function fw_indexsvc_entity_insert($entity, $type) {
+  if ($entity->status == 1) {
+    foreach (fw_indexsvc_get_handlers($type) as $handler) {
+      $handler->insert($entity, $type);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * @param Object $entity
+ * @param string $type
+ */
+function fw_indexsvc_entity_update($entity, $type) {
+  foreach (fw_indexsvc_get_handlers($type) as $handler) {
+    if ($entity->status == 1) {
+      $handler->update($entity, $type);
+    } else {
+      $handler->remove($entity, $type);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * @param Object $entity
+ * @param string $type
+ */
+function fw_indexsvc_entity_delete($entity, $type) {
+  foreach (fw_indexsvc_get_handlers($type) as $handler) {
+    $handler->remove($entity, $type);
+  }
+}
+
+/**
+ * Implements hook_init().
+ */
+function fw_indexsvc_init() {
+  
+  define('FW_INDEXSVC_ADMIN_PATH', 'admin/config/search/indexservices');
+  define('FW_INDEXSVC_ADMIN_PATH_START', 4);
+  include_once dirname(__FILE__) . '/includes/fw_indexsvc.class.inc';
+  include_once dirname(__FILE__) . '/includes/fw_indexsvc.batch.inc';
+  include_once dirname(__FILE__) . '/includes/fw_indexsvc.queue.inc';
+
+  foreach (fw_indexsvc_get_handlers('node') as $handler) {
+    $handler->check_queue();
+  }
+}
+
+/**
+ * Function to determine entity type from an object.
+ *
+ * @param Object $entity
+ * @return string
+ */
+function determine_entity_type($entity) {
+  if (isset($entity->nid)) {
+    return 'node';
+  }
+  if (isset($entity->fid)) {
+    return 'file';
+  }
+  if (isset($entity->tid)) {
+    return 'taxonomy_term';
+  }
+}
+
+/**
+ * Implements hook_path_update().
+ */
+function fw_indexsvc_path_update($path) {
+  if (isset($path['source'])) {
+    $router_item = menu_get_item($path['source']);
+    if (!empty($router_item['page_arguments'])) {
+      $entity = current($router_item['page_arguments']);
+      $type = determine_entity_type($entity);
+      if (isset($type)) {
+        module_invoke('fw_indexsvc', 'entity_update', $entity, $type);
+      }
+    }
+  }
+}
+
+/**
+ * Load all identifiers.
+ *
+ * @param $reset
+ *   Set TRUE to reset cache.
+ * @param $name
+ *   Set TRUE to fetch status of services.
+ *
+ * @return Array
+ *   Array of identifiers.
+ */
+function fw_indexsvc_get_idents($reset = FALSE, $check_status = FALSE) {
+  static $idents;
+
+  // Retrieve a list of all identifiers, regardless of the parameters.
+  if (!isset($idents) || $reset) {
+    $idents = array();
+
+    // Database identifiers.
+    $result = db_select('fw_indexsvc_identifiers', 'i')
+      ->fields('i')
+      ->execute();
+
+    while ($record = $result->fetchAssoc()) {
+      $row = (object) $record;
+      $row->sources = unserialize($row->sources);
+      $row->settings = unserialize($row->settings);
+      if ($check_status) {
+        $row->status = fw_indexsvc_check_ident_status($row);
+      }
+      $idents[$row->name] = $row;
+    }
+  }
+
+  return $idents;
+}
+
+/**
+ * Check identifier service status.
+ *
+ * @param Object $ident
+ *   Identifier object.
+ *
+ * @return Object
+ *   Status of the identifier service.
+ */
+function fw_indexsvc_check_ident_status($ident) {
+  if (isset($ident->sources)) {
+    $bundle = key($ident->sources);
+    $definition = fw_indexsvc_fetch_type_definitions($bundle);
+  } else {
+    $definition = fw_indexsvc_fetch_type_definitions('node');
+  }
+  if (class_exists($definition['handler'])) {
+    $handler = new $definition['handler']($ident);
+    $status = $handler->check_status();
+    return $status;
+  }
+}
+
+/**
+ * Load a single identifier either by name or by identifier ID.
+ *
+ * @param $name
+ *   The the identifier name.
+ * @param $iid
+ *   The the identifier id.
+ */
+function fw_indexsvc_get_ident($name = NULL, $iid = NULL, $check_status = FALSE) {
+  $idents = fw_indexsvc_get_idents(FALSE, $check_status);
+  if (isset($name)) {
+    if (isset($idents[$name])) {
+      return $idents[$name];
+    }
+  } elseif (isset($iid)) {
+    foreach ($idents as $ident) {
+      if ($ident->iid == $iid) {
+        return $ident;
+      }
+    }
+  }
+}
+
+/**
+ * Get a list of all handlers for a certain bundle and node type.
+ *
+ * @param string $entity_type
+ * @param Array $idents
+ *
+ * @return Array
+ *   All handlers defined with a connection to an identifier in the database.
+ */
+function fw_indexsvc_get_handlers($entity_type = 'node', $idents = NULL) {
+  $handlers = array();
+  // Get all identifiers.
+  if (empty($idents)) {
+    $idents = fw_indexsvc_get_idents();
+  }
+  foreach ($idents as $ident) {
+    foreach ($ident->sources as $_entity_type => $settings) {
+      // Get an instance of the handler for each entity type.
+      $definition = fw_indexsvc_fetch_type_definitions($_entity_type);
+      if (class_exists($definition['handler'])) {
+        $handler = new $definition['handler']($ident);
+        $handlers[$_entity_type][] = $handler;
+      }
+    }
+  }
+  if (!empty($entity_type)) {
+    if (isset($handlers[$entity_type])) {
+      return $handlers[$entity_type];
+    }
+    return array();
+  }
+  return $handlers;
+}
+
+/**
+ * Returns identifier type definitions.
+ */
+function fw_indexsvc_fetch_type_definitions($content_type = NULL) {
+  static $cache;
+  if (!isset($cache)) {
+    $cache = module_invoke_all('identifier_type_definitions');
+    if (!isset($cache['node'])) {
+      // We want our API to be available in hook_install, but our module is not
+      // enabled by then, so let's load our implementation directly:
+      $cache += fw_indexsvc_indentifier_type_definitions();
+    }
+  }
+
+  if (isset($content_type)) {
+    if (isset($cache[$content_type])) {
+      return $cache[$content_type];
+    }
+  } else {
+    return $cache;
+  }
+}
+
+/**
+ * Implementation of hook_indentifier_type_definitions().
+ *
+ * Defines the identifier source types this module implements.
+ *
+ * @return Array
+ *   An "array of arrays", keyed by content-types. The 'handler' slot
+ *   should point to the PHP class implementing this identifier.
+ */
+function fw_indexsvc_indentifier_type_definitions() {
+  return array(
+    'node' => array(
+      'title' => t('Content types'),
+      'description' => t("All content added to this Drupal site is an instance of these content types."),
+      'handler' => 'fwIndexSVC',
+    ),
+    'comment' => array(
+      'title' => t('Comments'),
+      'description' => t('Comments are responses to node content.'),
+      'handler' => 'fwIndexSVC',
+    ),
+    'user' => array(
+      'title' => t('Users'),
+      'description' => t('Users who have created accounts on your site.'),
+      'handler' => 'fwIndexSVC',
+    ),
+    'file' => array(
+      'title' => t('File'),
+      'description' => t('Files that have been uploaded and attached to node content.'),
+      'handler' => 'fwIndexSVC',
+    ),
+  );
+}
+
+/**
+ * Returns an identifier type options.
+ */
+function fw_indexsvc_fetch_type_options($content_type = NULL) {
+  static $cache;
+  if (!isset($cache)) {
+    $cache = module_invoke_all('identifier_type_options');
+    if (!isset($cache['node'])) {
+      // We want our API to be available in hook_install, but our module is not
+      // enabled by then, so let's load our implementation directly:
+      $cache = array_merge($cache, fw_indexsvc_indentifier_type_options());
+    }
+  }
+
+  if (isset($content_type)) {
+    if (isset($cache[$content_type])) {
+      return $cache[$content_type];
+    }
+  } else {
+    return $cache;
+  }
+}
+
+/**
+ * Implementation of hook_indentifier_type_options().
+ *
+ * Defines the identifier options for each type this module implements.
+ *
+ * @return Array
+ *   An "array of arrays", keyed by content-types. The 'handler' slot
+ *   should point to the PHP class implementing this identifier.
+ */
+function fw_indexsvc_indentifier_type_options() {
+  $node_options = array_map("_fw_indexsvc_filter_node_option", node_type_get_types());
+  $file_options = array();
+  $file_fields = field_read_fields(array('type' => array('file', 'media', 'image')));
+
+  foreach ($node_options as $bundle_name => $bundle_info) {
+    $fields = field_info_instances('node', $bundle_name);
+    $bundle_file_fields = array_intersect_key($file_fields, $fields);
+    foreach ($bundle_file_fields as $field_name => $field) {
+      $field_instance = field_info_instance('node', $field_name, $bundle_name);
+      if (!isset($file_options[$field_name])) {
+        $file_options[$field_name] = (object) $field_instance;
+      }
+      $file_options[$field_name]->usage[] = $bundle_name;
+    }
+  }
+  // Filter out the data we need from the file fields.
+  $file_options = array_merge(array(
+      'all' => (object) array(
+        'title' => t("All files"),
+        'description' => t("Index files indepenant to where it's used."),
+      ),
+    ), array_map("_fw_indexsvc_filter_file_option", $file_options));
+
+
+  $user_roles = user_roles();
+  $user_options = array(
+    'all' => (object) array(
+      'title' => t("All users"),
+      'description' => t("Index users independent of their roles."),
+    ),
+  );
+
+  foreach ($user_roles as $rid => $role_name) {
+    $user_options[$rid] = (object) array(
+      'title' => $role_name,
+    );
+  }
+
+  return array(
+    'node' => $node_options,
+    'file' => $file_options,
+    'user' => $user_options,
+  );
+}
+
+/**
+ * Returns an identifier type options.
+ */
+function fw_indexsvc_fetch_type_settings($settings = array(), $content_type = NULL) {
+  static $cache;
+  if (!isset($cache)) {
+    $cache = module_invoke_all('identifier_type_settings', $settings);
+    if (!isset($cache['node'])) {
+      // We want our API to be available in hook_install, but our module is not
+      // enabled by then, so let's load our implementation directly:
+      $cache = array_merge($cache, fw_indexsvc_indentifier_type_settings($settings));
+    }
+  }
+
+  if (isset($content_type)) {
+    if (isset($cache[$content_type])) {
+      return $cache[$content_type];
+    }
+  } else {
+    return $cache;
+  }
+}
+
+/**
+ * Implements hook_indexed_files_alter().
+ */
+function fw_indexsvc_indexed_files_alter(&$query, $handler) {
+  $settings = $handler->get_settings();
+  if (isset($settings['file'], $settings['file']['extensions'])) {
+    $extensions = explode(' ', $settings['file']['extensions']);
+    if (count($extensions) == 0) {
+      $extensions[] = '%';
+    }
+    $or = db_or();
+    foreach($extensions as $extension) {
+      $or->condition('fm.filename', '%.' . $extension, 'LIKE');
+    }
+    $query->condition($or);
+  }
+}
+
+/**
+ * Implementation of hook_indentifier_type_settings().
+ *
+ * Defines the identifier options for each type this module implements.
+ *
+ * @param Array $conf Settings for all entity types.
+ *
+ * @return Array
+ *   An "array of arrays", keyed by content-types. The 'handler' slot
+ *   should point to the PHP class implementing this identifier.
+ */
+function fw_indexsvc_indentifier_type_settings($settings = array()) {
+  $conf = $settings['file'];
+  $file_form = array();
+  $file_form['extensions'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Limit extensions'),
+    '#description' => t('Separate extensions by spaces e.g. "txt pdf doc"'),
+    '#default_value' => isset($conf, $conf['extensions']) ? $conf['extensions'] : '',
+  );
+
+  return array(
+    'file' => $file_form,
+  );
+}
+
+/**
+ * Helper to filter out name and description of node types.
+ *
+ * @param Object $option
+ * @return Object
+ */
+function _fw_indexsvc_filter_node_option($option) {
+  return (object) array(
+      'title' => "{$option->name} ({$option->type})",
+      'description' => $option->description,
+  );
+}
+
+/**
+ * Helper to filter out name and description of node types.
+ *
+ * @param Object $node_type
+ * @return Object
+ */
+function _fw_indexsvc_filter_node_type_name($node_type) {
+  return $node_type->name;
+}
+
+/**
+ * Helper to filter out field_name, description and extensions of a field.
+ *
+ * @param Array $option
+ * @return Array
+ */
+function _fw_indexsvc_filter_file_option($option) {
+  return (object) array(
+      'title' => "{$option->label} ({$option->field_name})",
+      'description' => t('@description (Extensions: %types) (Requires: %usage)', array(
+        '@description' => $option->description,
+        '%types' => (!empty($option->settings['file_extensions']) ? $option->settings['file_extensions'] : '*'),
+        '%usage' => implode(', ', $option->usage),
+      )),
+  );
+}
+
+/**
+ * Helper to filter out field_name, description of a user-role.
+ *
+ * @param Array $option
+ * @return Array
+ */
+function _fw_indexsvc_filter_user_option($option) {
+  return (object) array(
+      'title' => "{$option}",
+  );
+}
+
+/**
+ * Update a single identifier.
+ *
+ * @param string $name
+ *   The identifier name.
+ * @param string $endpoint
+ *   The identifier endpoint URL.
+ * @param Array $sources
+ *   The selected sources to listen for changes to when indexing.
+ */
+function fw_indexsvc_update_identifiers($iid, $name, $endpoint, $sources, $settings = array()) {
+  // Filter sources for enabled only.
+  foreach ($sources as &$source) {
+    $source = array_keys(array_filter($source));
+  }
+
+  // Create a record.
+  $record = array(
+    'name' => $name,
+    'endpoint' => $endpoint,
+    'sources' => serialize($sources),
+    'settings' => serialize($settings),
+  );
+  if ($iid) {
+    $record['iid'] = $iid;
+  }
+
+  // Write record to database (insert or update if duplicate name).
+  $result = drupal_write_record('fw_indexsvc_identifiers', $record, $iid ? 'iid' : array());
+  if ($result) {
+    drupal_set_message(t('Identifier <i>@name</i> was saved.', array('@name' => $name)));
+  }
+}
+
+/**
+ * Delete a single identifier either by name or by identifier ID.
+ *
+ * @param string $name
+ *   The the identifier name.
+ * @param Integer $iid
+ *   The the identifier id.
+ */
+function fw_indexsvc_delete_ident($name = NULL, $iid = NULL) {
+  $ident = fw_indexsvc_get_ident($name, $iid);
+
+  if (isset($name)) {
+    $result = db_delete('fw_indexsvc_identifiers')
+      ->condition('name', $name)
+      ->execute();
+  } elseif (isset($iid)) {
+    $result = db_delete('fw_indexsvc_identifiers')
+      ->condition('iid', $iid)
+      ->execute();
+  }
+  if ($result && isset($ident)) {
+    drupal_set_message(t('The identifier @name has been deleted.', array('@name' => $ident->name)));
+  }
+}
